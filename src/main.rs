@@ -15,6 +15,7 @@ use ratzilla::web_sys::window;
 use crate::app::App;
 
 mod app;
+mod module;
 
 fn main() -> io::Result<()> {
     let backend = DomBackend::new()?;
