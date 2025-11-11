@@ -1,0 +1,11 @@
+[package]
+name = "tui_blog"
+version = "0.1.0"
+authors = ["DocRAID <l01062506145@gmail.com>"]
+license = "MIT"
+edition = "2021"
+
+[dependencies]
+ratatui = { version = "0.29.0", default-features = false }
+color-eyre = "0.6.5"
+ratzilla = "0.2.0"
