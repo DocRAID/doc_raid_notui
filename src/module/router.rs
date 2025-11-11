@@ -4,7 +4,7 @@ pub enum Pages{
     Intro,  //blog intro page
     About,  //about me & contact page
     Blog,   //blog page
-    Err404,
+    Err404, //error page
 }
 
 impl Pages {
@@ -60,7 +60,7 @@ impl Router {
 
 #[cfg(test)]
 mod tests {
-    use crate::module::router::{Pages, Router};
+    use crate::module::router::{Router};
 
     #[test]
     fn test_path() {
