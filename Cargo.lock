@@ -695,6 +695,7 @@ dependencies = [
  "color-eyre",
  "ratatui",
  "ratzilla",
+ "strum",
 ]
 
 [[package]]

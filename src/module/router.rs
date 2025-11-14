@@ -1,6 +1,5 @@
-#[derive(Clone, Debug)]
-#[derive(PartialEq)]
-pub enum Pages{
+#[derive(Clone, Debug, PartialEq)]
+pub enum Pages {
     Intro,  //blog intro page
     About,  //about me & contact page
     Blog,   //blog page
@@ -8,7 +7,7 @@ pub enum Pages{
 }
 
 impl Pages {
-    pub fn page_select(path:String) -> Pages {
+    pub fn page_select(path: String) -> Pages {
         match path.as_ref() {
             "" => Pages::Intro,
             "about" => Pages::About,
@@ -18,18 +17,18 @@ impl Pages {
     }
 }
 
-#[derive(Clone,Debug)]
+#[derive(Clone, Debug)]
 pub struct Router {
     pages: Pages,
-    sub_query: Option<String>
+    sub_query: Option<String>,
 }
 
 impl Router {
-    pub fn new(path:String) -> Self {
+    pub fn new(path: String) -> Self {
         let mut parts = path.trim_start_matches('/').splitn(2, '/');
         let first = parts.next().unwrap_or("").to_string();
         let second = parts.next().map(|s| s.to_string());
-        Self{
+        Self {
             pages: Pages::page_select(first),
             sub_query: second,
         }
@@ -41,26 +40,21 @@ impl Router {
             Pages::About => "About".to_string(),
             Pages::Blog => {
                 if self.sub_query.is_some() {
-                    return format!("Blog -> [{}]", self.sub_query.as_ref().unwrap()).to_string()
+                    return format!("Blog -> [{}]", self.sub_query.as_ref().unwrap()).to_string();
                 }
                 "Blog".to_string()
-            },
-            _ => "Err404".to_string()
+            }
+            _ => "Err404".to_string(),
         }
     }
     pub fn nav_bar(&self) -> Vec<Pages> {
-        [
-            Pages::Intro,
-            Pages::About,
-            Pages::Blog,
-        ].to_vec()
+        [Pages::Intro, Pages::About, Pages::Blog].to_vec()
     }
-
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::module::router::{Router};
+    use crate::module::router::Router;
 
     #[test]
     fn test_path() {
@@ -69,5 +63,4 @@ mod tests {
         let router = Router::new("/a".to_string());
         assert_eq!(router.label(), "404".to_string());
     }
-
 }
