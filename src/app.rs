@@ -1,3 +1,6 @@
+use crate::module::router::Router;
+use ratatui::layout::Layout;
+use ratatui::widgets::Padding;
 use ratatui::{
     layout::{Alignment, Constraint},
     style::{Color, Stylize},
@@ -11,8 +14,6 @@ use ratzilla::{
     DomBackend, WebRenderer,
 };
 use std::{cell::RefCell, io, rc::Rc};
-
-use crate::module::router::Router;
 
 pub struct App {
     pub router: Router,
@@ -37,10 +38,28 @@ impl App {
         let mouse_pos = self.mouse_pos.borrow();
         let mouse_status = self.mouse_status.borrow();
 
+        let layout = Layout::vertical([
+            Constraint::Length(3), // Header
+            Constraint::Max(60),   //content
+        ])
+        .split(frame.area());
+
+        // Header
+        let nav_block = Block::bordered()
+            .border_type(BorderType::Plain)
+            .padding(Padding::horizontal(1));
+        let nav_paragraph = Paragraph::new("hello ● hello ● hello ● hello")
+            .block(nav_block)
+            .fg(Color::White)
+            .bg(Color::Black)
+            .centered();
+        frame.render_widget(nav_paragraph, layout[0]);
+
+        // Content
         let block = Block::bordered()
             .title(router.label())
             .title_alignment(Alignment::Center)
-            .border_type(BorderType::Rounded);
+            .border_type(BorderType::Plain);
 
         let text = format!(
             "my blog site. powered by ratatui\n\
@@ -55,7 +74,8 @@ impl App {
             .fg(Color::White)
             .bg(Color::Black)
             .centered();
-        frame.render_widget(paragraph, frame.area());
+
+        frame.render_widget(paragraph, layout[1]);
     }
 
     pub fn key_handle_events(&self, key_event: KeyEvent) {
