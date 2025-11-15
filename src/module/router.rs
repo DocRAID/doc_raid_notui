@@ -7,12 +7,21 @@ pub enum Pages {
 }
 
 impl Pages {
-    pub fn page_select(path: String) -> Pages {
+    pub fn page_select(path: String) -> Self {
         match path.as_ref() {
             "" => Pages::Intro,
             "about" => Pages::About,
             "blog" => Pages::Blog,
             _ => Pages::Err404,
+        }
+    }
+
+    pub fn to_string(&self) -> String {
+        match self {
+            Pages::Intro => "Intro".to_owned(),
+            Pages::About => "About".to_owned(),
+            Pages::Blog => "Blog".to_owned(),
+            Pages::Err404 => "Err404".to_owned(),
         }
     }
 }
@@ -48,7 +57,7 @@ impl Router {
         }
     }
     pub fn nav_bar(&self) -> Vec<Pages> {
-        [Pages::Intro, Pages::About, Pages::Blog].to_vec()
+        [Pages::Intro, Pages::Blog, Pages::About].to_vec()
     }
 }
 

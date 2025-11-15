@@ -1,6 +1,10 @@
-use crate::module::router::Router;
-use ratatui::layout::Layout;
-use ratatui::widgets::Padding;
+use crate::module::mouse_tool::is_rects_hovered;
+use crate::module::router::{Pages, Router};
+use color_eyre::owo_colors::OwoColorize;
+use ratatui::layout::{Layout, Position};
+use ratatui::style::Style;
+use ratatui::text::{Line, Span};
+use ratatui::widgets::{Padding, Wrap};
 use ratatui::{
     layout::{Alignment, Constraint},
     style::{Color, Stylize},
@@ -8,7 +12,7 @@ use ratatui::{
     widgets::{Block, BorderType, Paragraph},
     Frame,
 };
-use ratzilla::event::{MouseEvent, MouseEventKind};
+use ratzilla::event::{MouseButton, MouseEvent, MouseEventKind};
 use ratzilla::{
     event::{KeyCode, KeyEvent},
     DomBackend, WebRenderer,
@@ -45,15 +49,29 @@ impl App {
         .split(frame.area());
 
         // Header
-        let nav_block = Block::bordered()
+        let mut header_menu = Vec::new();
+        for route in router.nav_bar() {
+            header_menu.push(Span::styled(
+                format!(" [{}] ", route.to_string()),
+                Style::new(),
+            ));
+        }
+        let header_block = Block::bordered()
             .border_type(BorderType::Plain)
             .padding(Padding::horizontal(1));
-        let nav_paragraph = Paragraph::new("hello ● hello ● hello ● hello")
-            .block(nav_block)
-            .fg(Color::White)
+
+        let mut color = Color::White;
+        if is_rects_hovered(layout[0], *mouse_pos) {
+            color = Color::Green;
+        }
+
+        let header_paragraph = Paragraph::new(Line::from(header_menu))
+            .block(header_block)
+            .fg(color)
             .bg(Color::Black)
             .centered();
-        frame.render_widget(nav_paragraph, layout[0]);
+
+        frame.render_widget(header_paragraph, layout[0]);
 
         // Content
         let block = Block::bordered()
@@ -65,7 +83,8 @@ impl App {
             "my blog site. powered by ratatui\n\
              Counter: {counter}\n\
              now page is {:?}\n\
-             \n\nmouse: {:?}, {:?}",
+             \n\nmouse: {:?}, {:?}\
+             ",
             router, mouse_status, mouse_pos
         );
 
