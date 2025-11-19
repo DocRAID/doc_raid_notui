@@ -14,6 +14,7 @@ mod app;
 mod module;
 
 fn main() -> io::Result<()> {
+    console_log::init().unwrap();
     let backend = DomBackend::new()?;
     let terminal = Terminal::new(backend)?;
 

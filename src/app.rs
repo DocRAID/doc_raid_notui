@@ -1,6 +1,7 @@
-use crate::module::mouse_tool::is_rects_hovered;
+use crate::module::mouse_tool::{calc_header_button_ranges, is_points_hovered, is_rects_hovered};
 use crate::module::router::{Pages, Router};
 use color_eyre::owo_colors::OwoColorize;
+use log::info;
 use ratatui::layout::{Layout, Position};
 use ratatui::style::Style;
 use ratatui::text::{Line, Span};
@@ -13,6 +14,7 @@ use ratatui::{
     Frame,
 };
 use ratzilla::event::{MouseButton, MouseEvent, MouseEventKind};
+use ratzilla::web_sys::console::info;
 use ratzilla::{
     event::{KeyCode, KeyEvent},
     DomBackend, WebRenderer,
@@ -25,6 +27,7 @@ pub struct App {
     pub mouse_pos: RefCell<(u32, u32)>,
     pub counter: RefCell<u8>,
 }
+static BG_RGB: Color = Color::Rgb(28, 25, 22);
 
 impl App {
     pub fn new(path: String) -> Self {
@@ -48,34 +51,41 @@ impl App {
         ])
         .split(frame.area());
 
-        // Header
+        // Header///////////////////////////////////////////////////////
+
         let mut header_menu = Vec::new();
-        for route in router.nav_bar() {
+
+        let btn_ranges = calc_header_button_ranges(&router, layout[0].width);
+        for (route,btn_range) in router.nav_bar().iter().zip(btn_ranges.iter()) {
+            let mut btn_color = Color::White;
+            if is_points_hovered(btn_range.0 as u16 ,btn_range.1 as u16,1,2,*mouse_pos) {
+                btn_color = Color::Green;
+                if *mouse_status == MouseEventKind::Pressed {
+                    //todo: redirect
+                }
+                info!("{:?}, {}",btn_range, layout[0].width);
+            }
             header_menu.push(Span::styled(
                 format!(" [{}] ", route.to_string()),
-                Style::new(),
+                Style::new().fg(btn_color),
             ));
         }
+
         let header_block = Block::bordered()
             .border_type(BorderType::Plain)
             .padding(Padding::horizontal(1));
 
-        let mut color = Color::White;
-        if is_rects_hovered(layout[0], *mouse_pos) {
-            color = Color::Green;
-        }
 
         let header_paragraph = Paragraph::new(Line::from(header_menu))
             .block(header_block)
-            .fg(color)
-            .bg(Color::Black)
+            .fg(Color::White)
+            .bg(BG_RGB)
             .centered();
 
         frame.render_widget(header_paragraph, layout[0]);
-
-        // Content
+        // Content///////////////////////////////////////////////////////
         let block = Block::bordered()
-            .title(router.label())
+            .title(format!("[{}]", router.label()))
             .title_alignment(Alignment::Center)
             .border_type(BorderType::Plain);
 
@@ -91,7 +101,7 @@ impl App {
         let paragraph = Paragraph::new(text)
             .block(block)
             .fg(Color::White)
-            .bg(Color::Black)
+            .bg(BG_RGB)
             .centered();
 
         frame.render_widget(paragraph, layout[1]);
