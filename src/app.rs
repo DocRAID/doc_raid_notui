@@ -20,22 +20,25 @@ use ratzilla::{
     DomBackend, WebRenderer,
 };
 use std::{cell::RefCell, io, rc::Rc};
+use ratzilla::web_sys::{window, Window};
 
 pub struct App {
     pub router: Router,
     pub mouse_status: RefCell<MouseEventKind>,
     pub mouse_pos: RefCell<(u32, u32)>,
     pub counter: RefCell<u8>,
+    pub window: Window,
 }
 static BG_RGB: Color = Color::Rgb(28, 25, 22);
 
 impl App {
-    pub fn new(path: String) -> Self {
+    pub fn new(path: String,window: Window) -> Self {
         Self {
             router: Router::new(path),
             mouse_status: RefCell::new(MouseEventKind::Unidentified),
             mouse_pos: RefCell::new((0, 0)),
             counter: RefCell::new(0),
+            window,
         }
     }
     pub fn render(&self, frame: &mut Frame) {
@@ -61,9 +64,9 @@ impl App {
             if is_points_hovered(btn_range.0 as u16 ,btn_range.1 as u16,1,2,*mouse_pos) {
                 btn_color = Color::Green;
                 if *mouse_status == MouseEventKind::Pressed {
-                    //todo: redirect
+                    self.window.location().set_href(route.to_href()).expect("panic on redirect");
                 }
-                info!("{:?}, {}",btn_range, layout[0].width);
+                // info!("{:?}, {}",btn_range, layout[0].width);
             }
             header_menu.push(Span::styled(
                 format!(" [{}] ", route.to_string()),
@@ -85,7 +88,7 @@ impl App {
         frame.render_widget(header_paragraph, layout[0]);
         // Content///////////////////////////////////////////////////////
         let block = Block::bordered()
-            .title(format!("[{}]", router.label()))
+            .title(format!("{{ {} }}", router.label()))
             .title_alignment(Alignment::Center)
             .border_type(BorderType::Plain);
 

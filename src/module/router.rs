@@ -16,6 +16,15 @@ impl Pages {
         }
     }
 
+    pub fn to_href(&self) -> &str {
+        match self {
+            Pages::Intro => "/",
+            Pages::About => "/about",
+            Pages::Blog => "/blog",
+            Pages::Err404 => "/err404",
+        }
+    }
+
     pub fn to_string(&self) -> String {
         match self {
             Pages::Intro => "Intro".to_owned(),

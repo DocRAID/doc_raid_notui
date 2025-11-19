@@ -21,7 +21,7 @@ fn main() -> io::Result<()> {
     let window = window().expect("No window");
     let path = window.location().pathname().expect("No path");
 
-    let state = Rc::new(App::new(path));
+    let state = Rc::new(App::new(path,window));
 
     let key_event_state = Rc::clone(&state);
     let mouse_event_state = Rc::clone(&state);
