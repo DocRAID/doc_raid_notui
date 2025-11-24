@@ -12,15 +12,11 @@ pub fn is_rects_hovered(layout: Rect, mouse_pos: (u32, u32)) -> bool {
     let pos_x_max = (layout.x + layout.width) as f32 * X_SYNC;
     let pos_y_min = layout.y * Y_SYNC;
     let pos_y_max = layout.y + layout.height * Y_SYNC;
-    if ((mouse_pos.0 as f32) >= pos_x_min)
+
+    ((mouse_pos.0 as f32) >= pos_x_min)
         && ((mouse_pos.0 as f32) <= pos_x_max)
         && ((mouse_pos.1 as u16) >= pos_y_min)
         && ((mouse_pos.1 as u16) <= pos_y_max)
-    {
-        true
-    } else {
-        false
-    }
 }
 
 pub fn is_range_hovered(x: u16, y: u16, width: u16, height: u16, mouse_pos: (u32, u32)) -> bool {
@@ -28,15 +24,10 @@ pub fn is_range_hovered(x: u16, y: u16, width: u16, height: u16, mouse_pos: (u32
     let pos_x_max = (x + width) as f32 * X_SYNC;
     let pos_y_min = y * Y_SYNC;
     let pos_y_max = (y + height) * Y_SYNC;
-    if ((mouse_pos.0 as f32) >= pos_x_min)
+    ((mouse_pos.0 as f32) >= pos_x_min)
         && ((mouse_pos.0 as f32) <= pos_x_max)
         && ((mouse_pos.1 as u16) >= pos_y_min)
         && ((mouse_pos.1 as u16) <= pos_y_max)
-    {
-        true
-    } else {
-        false
-    }
 }
 
 pub fn is_points_hovered(
@@ -50,15 +41,11 @@ pub fn is_points_hovered(
     let pos_x_max = x_max as f32 * X_SYNC;
     let pos_y_min = y_min * Y_SYNC;
     let pos_y_max = y_max * Y_SYNC;
-    if ((mouse_pos.0 as f32) >= pos_x_min)
+
+    ((mouse_pos.0 as f32) >= pos_x_min)
         && ((mouse_pos.0 as f32) <= pos_x_max)
         && ((mouse_pos.1 as u16) >= pos_y_min)
         && ((mouse_pos.1 as u16) <= pos_y_max)
-    {
-        true
-    } else {
-        false
-    }
 }
 
 pub fn calc_header_button_ranges(router: &Router, width: u16) -> Vec<(usize, usize)> {

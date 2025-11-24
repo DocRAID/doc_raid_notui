@@ -1,10 +1,6 @@
 use std::{io, rc::Rc};
 
-use ratatui::{
-    style::{Color, Stylize},
-    widgets::{Block, BorderType, Paragraph},
-    Frame, Terminal,
-};
+use ratatui::{style::Stylize, Terminal};
 
 use ratzilla::{web_sys::window, DomBackend, WebRenderer};
 
@@ -12,6 +8,7 @@ use crate::app::App;
 
 mod app;
 mod module;
+mod pages;
 
 fn main() -> io::Result<()> {
     console_log::init().unwrap();
@@ -21,7 +18,7 @@ fn main() -> io::Result<()> {
     let window = window().expect("No window");
     let path = window.location().pathname().expect("No path");
 
-    let state = Rc::new(App::new(path,window));
+    let state = Rc::new(App::new(path, window));
 
     let key_event_state = Rc::clone(&state);
     let mouse_event_state = Rc::clone(&state);

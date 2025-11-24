@@ -3,7 +3,7 @@ use ratatui::prelude::{Color, Stylize};
 use ratatui::widgets::{Block, BorderType, Paragraph};
 use ratatui::Frame;
 
-pub fn blog_page(label: String, frame: &mut Frame, layout: Rect) {
+pub fn intro_page(label: String, frame: &mut Frame, layout: Rect) {
     let block = Block::bordered()
         .title(format!("{{ {} }}", label))
         .title_alignment(Alignment::Center)

@@ -1,26 +1,18 @@
-use crate::module::mouse_tool::{calc_header_button_ranges, is_points_hovered, is_rects_hovered};
-use crate::module::router::{Pages, Router};
+use crate::module::mouse_tool::{calc_header_button_ranges, is_points_hovered};
+use crate::module::router::Router;
 use color_eyre::owo_colors::OwoColorize;
-use log::info;
-use ratatui::layout::{Layout, Position};
-use ratatui::style::Style;
-use ratatui::text::{Line, Span};
-use ratatui::widgets::{Padding, Wrap};
 use ratatui::{
-    layout::{Alignment, Constraint},
-    style::{Color, Stylize},
-    symbols,
-    widgets::{Block, BorderType, Paragraph},
+    layout::{Constraint, Layout},
+    style::{Color, Style, Stylize},
+    text::{Line, Span},
+    widgets::{Block, BorderType, Padding, Paragraph},
     Frame,
 };
-use ratzilla::event::{MouseButton, MouseEvent, MouseEventKind};
-use ratzilla::web_sys::console::info;
 use ratzilla::{
-    event::{KeyCode, KeyEvent},
-    DomBackend, WebRenderer,
+    event::{KeyCode, KeyEvent, MouseEvent, MouseEventKind},
+    web_sys::Window,
 };
-use std::{cell::RefCell, io, rc::Rc};
-use ratzilla::web_sys::{window, Window};
+use std::cell::RefCell;
 
 pub struct App {
     pub router: Router,
@@ -29,10 +21,10 @@ pub struct App {
     pub counter: RefCell<u8>,
     pub window: Window,
 }
-static BG_RGB: Color = Color::Rgb(28, 25, 22);
+pub(crate) static BG_RGB: Color = Color::Rgb(28, 25, 22);
 
 impl App {
-    pub fn new(path: String,window: Window) -> Self {
+    pub fn new(path: String, window: Window) -> Self {
         Self {
             router: Router::new(path),
             mouse_status: RefCell::new(MouseEventKind::Unidentified),
@@ -42,7 +34,6 @@ impl App {
         }
     }
     pub fn render(&self, frame: &mut Frame) {
-        let counter = self.counter.borrow();
         let router = self.router.clone();
 
         let mouse_pos = self.mouse_pos.borrow();
@@ -59,12 +50,15 @@ impl App {
         let mut header_menu = Vec::new();
 
         let btn_ranges = calc_header_button_ranges(&router, layout[0].width);
-        for (route,btn_range) in router.nav_bar().iter().zip(btn_ranges.iter()) {
+        for (route, btn_range) in router.nav_bar().iter().zip(btn_ranges.iter()) {
             let mut btn_color = Color::White;
-            if is_points_hovered(btn_range.0 as u16 ,btn_range.1 as u16,1,2,*mouse_pos) {
+            if is_points_hovered(btn_range.0 as u16, btn_range.1 as u16, 1, 2, *mouse_pos) {
                 btn_color = Color::Green;
                 if *mouse_status == MouseEventKind::Pressed {
-                    self.window.location().set_href(route.to_href()).expect("panic on redirect");
+                    self.window
+                        .location()
+                        .set_href(route.to_href())
+                        .expect("panic on redirect");
                 }
                 // info!("{:?}, {}",btn_range, layout[0].width);
             }
@@ -78,7 +72,6 @@ impl App {
             .border_type(BorderType::Plain)
             .padding(Padding::horizontal(1));
 
-
         let header_paragraph = Paragraph::new(Line::from(header_menu))
             .block(header_block)
             .fg(Color::White)
@@ -87,27 +80,7 @@ impl App {
 
         frame.render_widget(header_paragraph, layout[0]);
         // Content///////////////////////////////////////////////////////
-        let block = Block::bordered()
-            .title(format!("{{ {} }}", router.label()))
-            .title_alignment(Alignment::Center)
-            .border_type(BorderType::Plain);
-
-        let text = format!(
-            "my blog site. powered by ratatui\n\
-             Counter: {counter}\n\
-             now page is {:?}\n\
-             \n\nmouse: {:?}, {:?}\
-             ",
-            router, mouse_status, mouse_pos
-        );
-
-        let paragraph = Paragraph::new(text)
-            .block(block)
-            .fg(Color::White)
-            .bg(BG_RGB)
-            .centered();
-
-        frame.render_widget(paragraph, layout[1]);
+        router.show_page(frame, layout[1]);
     }
 
     pub fn key_handle_events(&self, key_event: KeyEvent) {
